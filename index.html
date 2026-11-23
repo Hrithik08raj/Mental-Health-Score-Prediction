@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MindScore – Student wellbeing estimate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="header-top">
+      <h1>See how daily habits relate to a student’s wellbeing score</h1>
+      <div id="backend-status" class="status-pill status-loading" title="FastAPI Backend Status">
+        <span class="status-dot"></span>
+        <span class="status-text">Connecting to FastAPI...</span>
+      </div>
+    </div>
+    <p>Adjust the sliders to describe a typical day. The estimate updates as you go.</p>
+  </header>
+
+  <div class="layout">
+    <form id="form" autocomplete="off" novalidate>
+
+      <fieldset>
+        <legend>Screen time</legend>
+        <div class="field">
+          <label for="Avg_Daily_Usage_Hours">Social media per day <span class="val" data-out="Avg_Daily_Usage_Hours"></span></label>
+          <input type="range" id="Avg_Daily_Usage_Hours" name="Avg_Daily_Usage_Hours" min="1" max="8.8" step="0.1" value="5" data-unit=" h">
+        </div>
+        <div class="field">
+          <label for="Daily_Unlocks">Phone unlocks per day <span class="val" data-out="Daily_Unlocks"></span></label>
+          <input type="range" id="Daily_Unlocks" name="Daily_Unlocks" min="62" max="273" step="1" value="170" data-unit="">
+        </div>
+        <div class="two">
+          <div class="field">
+            <label for="Most_Used_Platform">Most used app</label>
+            <select id="Most_Used_Platform" name="Most_Used_Platform"></select>
+          </div>
+          <div class="field">
+            <label for="Purpose_Of_Use">Mainly used for</label>
+            <select id="Purpose_Of_Use" name="Purpose_Of_Use"></select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Body and rest</legend>
+        <div class="field">
+          <label for="Sleep_Hours_Per_Night">Sleep per night <span class="val" data-out="Sleep_Hours_Per_Night"></span></label>
+          <input type="range" id="Sleep_Hours_Per_Night" name="Sleep_Hours_Per_Night" min="3.6" max="9.9" step="0.1" value="6.6" data-unit=" h">
+        </div>
+        <div class="field">
+          <label for="Physical_Activity_Hours">Physical activity per day <span class="val" data-out="Physical_Activity_Hours"></span></label>
+          <input type="range" id="Physical_Activity_Hours" name="Physical_Activity_Hours" min="0" max="4.1" step="0.1" value="1.7" data-unit=" h">
+        </div>
+        <div class="field">
+          <div class="lab" id="stress-lab">Stress level</div>
+          <div class="seg" role="radiogroup" aria-labelledby="stress-lab">
+            <input type="radio" name="Stress_Level" id="stress-0" value="Low"><label for="stress-0">Low</label>
+            <input type="radio" name="Stress_Level" id="stress-1" value="Medium" checked><label for="stress-1">Medium</label>
+            <input type="radio" name="Stress_Level" id="stress-2" value="High"><label for="stress-2">High</label>
+            <input type="radio" name="Stress_Level" id="stress-3" value="Very High"><label for="stress-3">Very High</label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>About the student</legend>
+        <div class="field">
+          <label for="Study_Hours">Study time per day <span class="val" data-out="Study_Hours"></span></label>
+          <input type="range" id="Study_Hours" name="Study_Hours" min="0.3" max="8.3" step="0.1" value="2.8" data-unit=" h">
+        </div>
+        <div class="field">
+          <label for="Age">Age <span class="val" data-out="Age"></span></label>
+          <input type="range" id="Age" name="Age" min="18" max="24" step="1" value="21" data-unit="">
+        </div>
+        <div class="field">
+          <div class="lab" id="level-lab">Academic level</div>
+          <div class="seg" role="radiogroup" aria-labelledby="level-lab">
+            <input type="radio" name="Academic_Level" id="level-0" value="High School"><label for="level-0">High School</label>
+            <input type="radio" name="Academic_Level" id="level-1" value="Undergraduate" checked><label for="level-1">Undergraduate</label>
+            <input type="radio" name="Academic_Level" id="level-2" value="Graduate"><label for="level-2">Graduate</label>
+          </div>
+        </div>
+        <div class="two">
+          <div class="field">
+            <div class="lab" id="gender-lab">Gender</div>
+          <div class="seg" role="radiogroup" aria-labelledby="gender-lab">
+            <input type="radio" name="Gender" id="gender-0" value="Female" checked><label for="gender-0">Female</label>
+            <input type="radio" name="Gender" id="gender-1" value="Male"><label for="gender-1">Male</label>
+          </div>
+          </div>
+          <div class="field">
+            <label for="Grouped_country">Country</label>
+            <select id="Grouped_country" name="Grouped_country"></select>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+
+    <aside aria-live="polite">
+      <section class="result">
+        <svg class="gauge" viewBox="0 0 240 135" role="img" aria-label="Wellbeing score gauge from 0 to 10">
+          <defs>
+            <linearGradient id="arc" x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0" stop-color="var(--low)"/><stop offset=".5" stop-color="var(--mid)"/><stop offset="1" stop-color="var(--high)"/>
+            </linearGradient>
+          </defs>
+          <path class="track" d="M20 120 A100 100 0 0 1 220 120" fill="none" stroke-width="18" stroke-linecap="round"/>
+          <path class="fill" id="fill" d="M20 120 A100 100 0 0 1 220 120" fill="none" stroke="url(#arc)" stroke-width="18" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/>
+        </svg>
+        <div class="score"><span id="score">–</span><small> / 10</small></div>
+        <div class="band" id="band"></div>
+        <p class="vs" id="vs">&nbsp;</p>
+
+        <div class="changes">
+          <h2>What could move this score</h2>
+          <p class="sub">Each row changes one habit and keeps the rest the same.</p>
+          <ul id="changes"></ul>
+        </div>
+        <p class="note">This is a statistical estimate from a model trained on survey data about students. It shows patterns, not a diagnosis. If you are struggling, please talk to a doctor, counsellor, or someone you trust.</p>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<script src="model.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
